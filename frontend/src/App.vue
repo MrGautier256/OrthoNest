@@ -1,14 +1,52 @@
 <template>
   <v-app>
-    <v-app-bar color="primary" dark>
-      <v-app-bar-title>OrthoNest</v-app-bar-title>
+    <v-app-bar
+        elevation="0"
+        class="app-bar-gradient"
+    >
+      <template v-slot:prepend>
+        <v-icon size="32" class="ml-2">mdi-file-document</v-icon>
+      </template>
+
+      <v-app-bar-title class="text-h5 font-weight-bold">
+        OrthoNest
+      </v-app-bar-title>
+
+      <template v-slot:append>
+        <v-btn icon variant="text">
+          <v-icon>mdi-magnify</v-icon>
+        </v-btn>
+        <v-btn icon variant="text">
+          <v-icon>mdi-account-circle</v-icon>
+        </v-btn>
+      </template>
     </v-app-bar>
 
-    <v-main>
-      <router-view />
+    <v-main class="bg-surface">
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </v-main>
   </v-app>
 </template>
 
 <script setup>
 </script>
+
+<style scoped>
+.app-bar-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
