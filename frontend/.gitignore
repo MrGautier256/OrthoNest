@@ -1,0 +1,14 @@
+# Node modules & build
+node_modules/
+dist/
+dist-ssr/
+
+# Env (real ones ignored by root gitignore)
+.env.local
+.env.*.local
+
+# IDE / Misc
+.vscode/
+.idea/
+.DS_Store
+*.log
