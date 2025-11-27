@@ -1,17 +1,28 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000/api"
+console.log("API_BASE_URL =", API_BASE_URL)
 
-function buildUrl(path, params) {
-    const url = new URL(path, API_BASE_URL)
+function buildUrl(path = "", params) {
+
+    const base = API_BASE_URL.replace(/\/+$/, "")        // enlève les / à la fin
+    const cleanedPath = path.replace(/^\/+/, "")         // enlève les / au début
+
+    let url = `${base}/${cleanedPath}`
 
     if (params && typeof params === "object") {
+        const search = new URLSearchParams()
         Object.entries(params).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
-                url.searchParams.append(key, String(value))
+                search.append(key, String(value))
             }
         })
+        const qs = search.toString()
+        if (qs) {
+            url += `?${qs}`
+        }
     }
 
-    return url.toString()
+    console.log("final URL =", url)
+    return url
 }
 
 async function request(path, { method = "GET", params, body, headers } = {}) {
@@ -31,7 +42,6 @@ async function request(path, { method = "GET", params, body, headers } = {}) {
 
     const response = await fetch(url, options)
 
-    // Ici tu peux gérer globalement les erreurs HTTP
     if (!response.ok) {
         let message = `Erreur HTTP ${response.status}`
         try {
@@ -39,13 +49,12 @@ async function request(path, { method = "GET", params, body, headers } = {}) {
             if (data && data.message) {
                 message = data.message
             }
-        } catch (e) {
-            // on ignore si pas de JSON
+        } catch {
+            // ignore
         }
         throw new Error(message)
     }
 
-    // Si pas de contenu, on renvoie null
     if (response.status === 204) {
         return null
     }

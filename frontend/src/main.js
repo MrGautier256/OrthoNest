@@ -7,11 +7,11 @@ import "@mdi/font/css/materialdesignicons.css"
 
 import CatalogView from "./views/CatalogView.vue"
 
+// Router
 const router = createRouter({
     history: createWebHistory(),
     routes: [
         { path: "/", name: "catalog", component: CatalogView },
-        // plus tard: { path: "/items/:id", name: "item", component: ItemView },
     ],
 })
 
@@ -22,4 +22,7 @@ const vuetify = createVuetify({
     },
 })
 
-createApp(App).use(router).use(vuetify).mount("#app")
+createApp(App)
+    .use(router)
+    .use(vuetify)
+    .mount("#app")
