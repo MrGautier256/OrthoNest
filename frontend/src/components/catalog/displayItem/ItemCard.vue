@@ -6,42 +6,23 @@ const props = defineProps({
   },
 })
 
-const typeConfig = {
-  bilan: {
-    label: "Bilan",
-    icon: "mdi-clipboard-text",
-    color: "#667eea",
-    gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-  },
-  outil: {
-    label: "Outil, matériel",
-    icon: "mdi-tools",
-    color: "#f093fb",
-    gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-  },
-  jeu: {
-    label: "Jeu",
-    icon: "mdi-puzzle",
-    color: "#4facfe",
-    gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-  },
+const type = props.item.type ?? {}
+const status = props.item.status
+
+const fallbackTypeConfig = {
+  label: "Outil",
+  icon: "mdi-file-document",
+  color: "#4facfe",
+  gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
 }
 
-const statusConfig = {
-  officiel: {
-    label: "Officiel",
-    icon: "mdi-check-decagram",
-    color: "success",
-  },
-  diy: {
-    label: "DIY",
-    icon: "mdi-hammer-wrench",
-    color: "warning",
-  },
+function getGradient() {
+  if (type.color && type.color.startsWith("#")) {
+    // si tu veux, on peut dériver un gradient à partir de la couleur
+    return `linear-gradient(135deg, ${type.color} 0%, #764ba2 100%)`
+  }
+  return type.gradient || fallbackTypeConfig.gradient
 }
-
-const config = typeConfig[props.item.type] || typeConfig.outil
-const statusConf = statusConfig[props.item.status] || statusConfig.diy
 </script>
 
 <template>
@@ -50,10 +31,9 @@ const statusConf = statusConfig[props.item.status] || statusConfig.diy
       elevation="2"
       hover
   >
-    <!-- Header coloré avec icône -->
-    <div class="card-header" :style="{ background: config.gradient }">
+    <div class="card-header" :style="{ background: getGradient() }">
       <v-icon size="40" color="white">
-        {{ config.icon }}
+        {{ type.icon || fallbackTypeConfig.icon }}
       </v-icon>
     </div>
 
@@ -63,16 +43,16 @@ const statusConf = statusConfig[props.item.status] || statusConfig.diy
           {{ item.title }}
         </span>
         <v-tooltip location="top">
-          <template v-slot:activator="{ props }">
+          <template #activator="{ props }">
             <v-icon
                 v-bind="props"
-                :color="statusConf.color"
+                :color="status === 'officiel' ? 'success' : 'warning'"
                 size="20"
             >
-              {{ statusConf.icon }}
+              {{ status === 'officiel' ? 'mdi-check-decagram' : 'mdi-hammer-wrench' }}
             </v-icon>
           </template>
-          {{ statusConf.label }}
+          {{ status === 'officiel' ? 'Officiel' : 'DIY' }}
         </v-tooltip>
       </div>
     </v-card-title>
@@ -80,11 +60,11 @@ const statusConf = statusConfig[props.item.status] || statusConfig.diy
     <v-card-subtitle class="pb-2">
       <v-chip
           size="small"
-          :color="config.color"
+          :color="type.color || fallbackTypeConfig.color"
           variant="tonal"
           label
       >
-        {{ config.label }}
+        {{ type.label || fallbackTypeConfig.label }}
       </v-chip>
     </v-card-subtitle>
 
@@ -120,6 +100,7 @@ const statusConf = statusConfig[props.item.status] || statusConfig.diy
     </v-card-actions>
   </v-card>
 </template>
+
 
 <style scoped>
 .item-card {

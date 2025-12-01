@@ -1,3 +1,4 @@
+// src/main.js
 import { createApp } from "vue"
 import App from "./App.vue"
 import { createRouter, createWebHistory } from "vue-router"
@@ -7,6 +8,12 @@ import "@mdi/font/css/materialdesignicons.css"
 
 import CatalogView from "./views/CatalogView.vue"
 
+if (import.meta.env.DEV) {
+    import("@vue/devtools").then(({ devtools }) => {
+        devtools.connect()
+    })
+}
+
 // Router
 const router = createRouter({
     history: createWebHistory(),
@@ -15,10 +22,14 @@ const router = createRouter({
     ],
 })
 
+// clé locale pour le thème
+const THEME_STORAGE_KEY = "orthonest-theme"
+const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || "light"
+
 // Vuetify
 const vuetify = createVuetify({
     theme: {
-        defaultTheme: "light",
+        defaultTheme: savedTheme, // "light" ou "dark"
     },
 })
 

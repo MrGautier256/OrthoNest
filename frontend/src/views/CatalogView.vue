@@ -1,13 +1,23 @@
 <script setup>
-import { ref, computed, onMounted } from "vue"
+import { ref, computed, onMounted, watch } from "vue"
 import { getItems } from "../services/items.js"
 import ItemList from "../components/catalog/ItemList.vue"
+
+const DISPLAY_MODE_KEY = "orthonest-display-mode"
 
 const items = ref([])
 const error = ref("")
 const loading = ref(true)
 const searchQuery = ref("")
 const selectedType = ref(null)
+
+// lire la valeur sauvegardée ou "list" par défaut
+const displayMode = ref(localStorage.getItem(DISPLAY_MODE_KEY) || "list") // 'cards' ou 'list'
+
+// on sauvegarde à chaque changement
+watch(displayMode, (val) => {
+  localStorage.setItem(DISPLAY_MODE_KEY, val)
+})
 
 const typeFilters = [
   { value: null, title: "Tous", icon: "mdi-view-grid" },
@@ -20,14 +30,14 @@ const filteredItems = computed(() => {
   let result = items.value
 
   if (selectedType.value) {
-    result = result.filter(item => item.type === selectedType.value)
+    result = result.filter(item => item.type?.slug === selectedType.value)
   }
 
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     result = result.filter(item =>
         item.title.toLowerCase().includes(query) ||
-        item.description?.toLowerCase().includes(query)
+        item.description?.toLowerCase().includes(query),
     )
   }
 
@@ -36,7 +46,7 @@ const filteredItems = computed(() => {
 
 onMounted(async () => {
   try {
-    await new Promise(resolve => setTimeout(resolve, 500)) // Simule un chargement
+    await new Promise(resolve => setTimeout(resolve, 500))
     items.value = await getItems()
   } catch (e) {
     error.value = e.message ?? String(e)
@@ -46,6 +56,7 @@ onMounted(async () => {
 })
 </script>
 
+
 <template>
   <div>
     <!-- Hero Section -->
@@ -53,17 +64,6 @@ onMounted(async () => {
       <v-container>
         <v-row justify="center">
           <v-col cols="12" md="8" class="text-center">
-            <v-icon size="64" color="white" class="mb-4 bounce">
-              mdi-file-document
-            </v-icon>
-            <h1 class="text-h3 font-weight-bold text-white mb-3">
-              Catalogue OrthoNest
-            </h1>
-            <p class="text-h6 text-white text-opacity-90 mb-6">
-              Découvrez tous nos outils, bilans et jeux orthophoniques
-            </p>
-
-            <!-- Barre de recherche -->
             <v-text-field
                 v-model="searchQuery"
                 variant="solo"
@@ -82,8 +82,8 @@ onMounted(async () => {
     <v-container class="py-8">
       <!-- Filtres par type -->
       <v-row class="mb-6">
-        <v-col cols="12">
-          <div class="d-flex flex-wrap gap-3 justify-center">
+        <v-col cols="12" class="d-flex flex-wrap justify-space-between align-center">
+          <div class="d-flex flex-wrap gap-3">
             <v-btn
                 v-for="filter in typeFilters"
                 :key="filter.value"
@@ -98,8 +98,32 @@ onMounted(async () => {
               {{ filter.title }}
             </v-btn>
           </div>
+
+          <!-- Toggle vue cartes / liste -->
+          <v-btn-toggle
+              v-model="displayMode"
+              mandatory
+              rounded="pill"
+              class="mt-4 mt-md-0"
+          >
+            <v-btn
+                value="cards"
+                icon
+                :aria-label="'Vue cartes'"
+            >
+              <v-icon>mdi-view-grid</v-icon>
+            </v-btn>
+            <v-btn
+                value="list"
+                icon
+                :aria-label="'Vue liste'"
+            >
+              <v-icon>mdi-view-list</v-icon>
+            </v-btn>
+          </v-btn-toggle>
         </v-col>
       </v-row>
+
 
       <!-- Alerte erreur -->
       <v-row v-if="error">
@@ -131,7 +155,11 @@ onMounted(async () => {
                 Chargement...
               </p>
             </div>
-            <ItemList v-else :items="filteredItems" />
+            <ItemList
+                v-else
+                :items="filteredItems"
+                :display-mode="displayMode"
+            />
           </v-fade-transition>
         </v-col>
       </v-row>

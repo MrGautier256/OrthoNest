@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Item;
+use App\Models\ItemType;
 use Illuminate\Database\Seeder;
 
 class ItemSeeder extends Seeder
@@ -11,9 +12,13 @@ class ItemSeeder extends Seeder
     {
         Item::truncate();
 
+        $bilan = ItemType::where('slug', 'bilan')->first();
+        $outil = ItemType::where('slug', 'outil')->first();
+        $jeu   = ItemType::where('slug', 'jeu')->first();
+
         Item::create([
             'title' => 'Bilan langage écrit adulte',
-            'type' => 'bilan',
+            'item_type_id' => $bilan->id,
             'description' => 'Bilan complet du langage écrit pour adultes.',
             'creator' => 'Maison d édition X',
             'status' => 'officiel',
@@ -21,7 +26,7 @@ class ItemSeeder extends Seeder
 
         Item::create([
             'title' => 'Jeu de cartes phonologie DIY',
-            'type' => 'outil',
+            'item_type_id' => $outil->id,
             'description' => 'Jeu DIY pour travailler la phonologie chez les enfants.',
             'creator' => 'Promo Ortho 2025',
             'status' => 'diy',
@@ -29,7 +34,7 @@ class ItemSeeder extends Seeder
 
         Item::create([
             'title' => 'Jeu attention et fonctions exécutives',
-            'type' => 'jeu',
+            'item_type_id' => $jeu->id,
             'description' => 'Jeu de plateau pour travailler l attention et les fonctions exécutives.',
             'creator' => 'Éditeur Y',
             'status' => 'officiel',

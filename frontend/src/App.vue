@@ -1,10 +1,11 @@
+<!-- src/App.vue -->
 <template>
   <v-app>
     <v-app-bar
         elevation="0"
         class="app-bar-gradient"
     >
-      <template v-slot:prepend>
+      <template #prepend>
         <v-icon size="32" class="ml-2">mdi-file-document</v-icon>
       </template>
 
@@ -12,7 +13,19 @@
         OrthoNest
       </v-app-bar-title>
 
-      <template v-slot:append>
+      <template #append>
+        <!-- Toggle dark mode -->
+        <v-btn
+            icon
+            variant="text"
+            @click="toggleDark"
+            :aria-label="isDark ? 'Passer en mode clair' : 'Passer en mode sombre'"
+        >
+          <v-icon>
+            {{ isDark ? "mdi-weather-sunny" : "mdi-weather-night" }}
+          </v-icon>
+        </v-btn>
+
         <v-btn icon variant="text">
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
@@ -33,6 +46,26 @@
 </template>
 
 <script setup>
+import { computed } from "vue"
+import { useTheme } from "vuetify"
+
+const THEME_STORAGE_KEY = "orthonest-theme"
+
+const theme = useTheme()
+
+const isDark = computed({
+  get() {
+    return theme.global.current.value.dark
+  },
+  set(val) {
+    theme.global.name.value = val ? "dark" : "light"
+    localStorage.setItem(THEME_STORAGE_KEY, val ? "dark" : "light")
+  },
+})
+
+function toggleDark() {
+  isDark.value = !isDark.value
+}
 </script>
 
 <style scoped>

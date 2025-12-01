@@ -40,5 +40,6 @@ dist-ssr/
 
 # Misc
 *.log
-tree.py
+frontend/tree.py
 output.txt
+backend/tree.py
