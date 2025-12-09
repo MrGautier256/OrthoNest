@@ -1,4 +1,8 @@
 <script setup>
+import { useTheme } from "vuetify"
+
+const theme = useTheme()
+
 const props = defineProps({
   item: {
     type: Object,
@@ -15,7 +19,7 @@ const status = props.item.status
     <v-list-item class="item-row" :title="item.title">
       <template #prepend>
         <v-avatar :color="type.color || 'primary'" size="40">
-          <v-icon color="white">
+          <v-icon :color="theme.global.current.value.dark ? '#212121' : 'white'">
             {{ type.icon || 'mdi-file-document' }}
           </v-icon>
         </v-avatar>

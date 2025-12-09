@@ -1,4 +1,8 @@
 <script setup>
+import { useTheme } from "vuetify"
+
+const theme = useTheme()
+
 const props = defineProps({
   item: {
     type: Object,
@@ -18,7 +22,6 @@ const fallbackTypeConfig = {
 
 function getGradient() {
   if (type.color && type.color.startsWith("#")) {
-    // si tu veux, on peut dériver un gradient à partir de la couleur
     return `linear-gradient(135deg, ${type.color} 0%, #764ba2 100%)`
   }
   return type.gradient || fallbackTypeConfig.gradient
@@ -32,7 +35,10 @@ function getGradient() {
       hover
   >
     <div class="card-header" :style="{ background: getGradient() }">
-      <v-icon size="40" color="white">
+      <v-icon
+          size="40"
+          :color="theme.global.current.value.dark ? '#212121' : 'white'"
+      >
         {{ type.icon || fallbackTypeConfig.icon }}
       </v-icon>
     </div>
@@ -56,7 +62,6 @@ function getGradient() {
         </v-tooltip>
       </div>
     </v-card-title>
-
     <v-card-subtitle class="pb-2">
       <v-chip
           size="small"
